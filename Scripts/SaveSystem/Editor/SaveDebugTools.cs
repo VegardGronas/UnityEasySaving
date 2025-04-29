@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -75,6 +76,28 @@ public class SaveDebugTools : EditorWindow
                 SaveFile loaded = SaveManager.Load(SaveProfileManager.GetSaveFilePath());
                 Debug.Log("Game loaded!");
             }
+        }
+
+        GUILayout.Label("Available Save Profiles", EditorStyles.boldLabel);
+
+        List<string> profiles = SaveProfileManager.ListProfiles();
+
+        if (profiles.Count == 0)
+        {
+            GUILayout.Label("No profiles found.");
+        }
+        else
+        {
+            GUILayout.BeginVertical("box");
+            foreach (string profile in profiles)
+            {
+                if (GUILayout.Button(profile))
+                {
+                    SaveProfileManager.SetActiveProfile(profile);
+                    Debug.Log($"Switched to profile: {profile}");
+                }
+            }
+            GUILayout.EndVertical();
         }
     }
 }
