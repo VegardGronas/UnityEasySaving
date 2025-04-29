@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class SaveDebugTools : EditorWindow
 {
+    private string newProfileName = "";
+
     [MenuItem("Tools/Save Debug Tools")]
     public static void ShowWindow()
     {
@@ -11,9 +13,24 @@ public class SaveDebugTools : EditorWindow
 
     private void OnGUI()
     {
-        // Directly access SaveTracker (since it's static)
-        var saveables = SaveTracker.GetAllSaveables();
+        // --- Profile Section ---
+        GUILayout.Label("Save Profile", EditorStyles.boldLabel);
+        GUILayout.Label($"Active Profile: {SaveProfileManager.GetActiveProfileName()}", EditorStyles.helpBox);
 
+        GUILayout.BeginHorizontal();
+        newProfileName = GUILayout.TextField(newProfileName, GUILayout.MinWidth(100));
+        if (GUILayout.Button("Set Profile") && !string.IsNullOrWhiteSpace(newProfileName))
+        {
+            SaveProfileManager.SetActiveProfile(newProfileName);
+            Debug.Log("Active profile set to: " + newProfileName);
+            newProfileName = "";
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.Space(15);
+
+        // --- Saveables Section ---
+        var saveables = SaveTracker.GetAllSaveables();
         if (saveables == null || saveables.Count == 0)
         {
             GUILayout.Label("No saveables found.");
@@ -22,20 +39,17 @@ public class SaveDebugTools : EditorWindow
         {
             GUILayout.Label("Tracked Saveables", EditorStyles.boldLabel);
 
-            // Iterate through all tracked saveables
             foreach (var saveable in saveables)
             {
                 if (saveable != null)
                 {
                     GUILayout.BeginHorizontal();
 
-                    // Display UniqueID and allow editing it
                     GUILayout.Label($"UniqueID: {saveable.UniqueID}");
 
-                    // Add a button to remove it from the tracker
                     if (GUILayout.Button("Remove from Tracker"))
                     {
-                        Destroy(saveable.gameObject);
+                        Object.DestroyImmediate(saveable.gameObject); // Immediate because this is Editor context
                         Debug.Log($"Removed {saveable.UniqueID} from SaveTracker");
                     }
 
@@ -47,16 +61,18 @@ public class SaveDebugTools : EditorWindow
 
             if (GUILayout.Button("Save All"))
             {
-                SaveManager.Save(Application.persistentDataPath + "/save.json");
+                SaveManager.Save(SaveProfileManager.GetSaveFilePath());
                 Debug.Log("Game saved!");
             }
         }
 
-        if(Application.isPlaying)
+        if (Application.isPlaying)
         {
+            GUILayout.Space(10);
+
             if (GUILayout.Button("Load All"))
             {
-                SaveFile loaded = SaveManager.Load(Application.persistentDataPath + "/save.json");
+                SaveFile loaded = SaveManager.Load(SaveProfileManager.GetSaveFilePath());
                 Debug.Log("Game loaded!");
             }
         }

@@ -21,6 +21,13 @@ public static class SaveManager
             allData.Objects.Add(obj);
         }
 
+        // Ensure the directory exists
+        string directory = Path.GetDirectoryName(path);
+        if (!Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
         string json = JsonUtility.ToJson(allData, true);
         File.WriteAllText(path, json);
         Debug.Log("Saved to " + path);
