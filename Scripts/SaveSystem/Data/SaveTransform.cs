@@ -5,7 +5,7 @@ public class SaveTransform : BaseSave
 {
     public override string SaveData()
     {
-        TransformData data = new(transform.position, transform.rotation);
+        TransformData data = new(transform.position, transform.rotation, transform.localScale);
         string json = JsonUtility.ToJson(data);
         return json;
     }
@@ -15,6 +15,7 @@ public class SaveTransform : BaseSave
         TransformData data = JsonUtility.FromJson<TransformData>(json);
         transform.position = data.position;
         transform.rotation = data.rotation;
+        transform.localScale = data.scale;
     }
 }
 
@@ -23,10 +24,12 @@ public class TransformData
 {
     public Vector3 position;
     public Quaternion rotation;
+    public Vector3 scale;
 
-    public TransformData(Vector3 pos, Quaternion rot)
+    public TransformData(Vector3 pos, Quaternion rot, Vector3 scale)
     {
         position = pos;
         rotation = rot;
+        this.scale = scale;
     }
 }

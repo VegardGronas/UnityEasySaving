@@ -28,6 +28,16 @@ public class SaveDebugTools : EditorWindow
         }
         GUILayout.EndHorizontal();
 
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Clear save data"))
+        {
+            bool deleted = SaveManager.Delete(SaveProfileManager.GetSaveFilePath());
+
+            if(deleted) Debug.Log("Cleard data: " + SaveProfileManager.GetSaveFilePath());
+            else Debug.Log("Failed to clear data, file missing: " + SaveProfileManager.GetSaveFilePath());
+        }
+        GUILayout.EndHorizontal();
+
 
         GUILayout.Label("Available Save Profiles", EditorStyles.boldLabel);
 

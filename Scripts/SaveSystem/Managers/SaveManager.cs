@@ -4,6 +4,22 @@ using UnityEngine;
 
 public static class SaveManager
 {
+    public static bool Delete(string path)
+    {
+        // Ensure the directory exists
+        string directory = Path.GetDirectoryName(path);
+        if (!Directory.Exists(directory))
+        {
+            return false;
+        }
+
+        var emptyData = new SaveFile();
+        string json = JsonUtility.ToJson(emptyData, true);
+        File.WriteAllText(path, json);
+
+        return true;
+    }
+
     public static void Save(string path)
     {
         var allData = new SaveFile();
