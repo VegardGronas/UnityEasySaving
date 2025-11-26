@@ -11,7 +11,10 @@ public abstract class BaseSave : MonoBehaviour
         if (identity == null)
         {
             Debug.LogError("SaveIdentity missing on GameObject with BaseSave!");
+            return;
         }
+
+        identity.UniqueID = System.Guid.NewGuid().ToString();
     }
 
     protected virtual void Start()

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class SaveIdentity : MonoBehaviour
 {
-    public string UniqueID = System.Guid.NewGuid().ToString();
+    public string UniqueID { get; set; } 
     public bool IsSceneObject = true;
     public string PrefabName;
 }
