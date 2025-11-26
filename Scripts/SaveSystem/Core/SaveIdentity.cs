@@ -10,11 +10,6 @@ public class SaveIdentity : MonoBehaviour
     public bool IsSceneObject = true;
     public string PrefabName;
 
-    private void Awake()
-    {
-        SetID();
-    }
-
     private void SetID()
     {
         if (uniqueID == "")
@@ -33,11 +28,13 @@ public class SaveIdentity : MonoBehaviour
         uniqueID = GUID.Generate().ToString();
     }
 
-#if UNITY_EDITOR
+
     private void OnValidate()
     {
+#if UNITY_EDITOR
         if (IsPrefabAsset(gameObject))
             return;
+#endif
 
         SetID();
     }
@@ -48,5 +45,4 @@ public class SaveIdentity : MonoBehaviour
         return status != PrefabAssetType.NotAPrefab &&
                PrefabUtility.GetPrefabInstanceStatus(obj) == PrefabInstanceStatus.NotAPrefab;
     }
-#endif
 }

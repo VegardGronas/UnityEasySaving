@@ -13,12 +13,11 @@ public abstract class BaseSave : MonoBehaviour
             Debug.LogError("SaveIdentity missing on GameObject with BaseSave!");
             return;
         }
-    }
 
-    protected virtual void Start()
-    {
         SaveTracker.Register(this);
     }
+
+    protected virtual void Start() { }
 
     protected virtual void OnDestroy()
     {

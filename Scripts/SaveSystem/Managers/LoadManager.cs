@@ -65,7 +65,6 @@ public static class LoadManager
             }
 
             // Assign proper ID for runtime object
-            newSave.UpdateID();
             newSave.IsSceneObject = false;
 
             // Load data
