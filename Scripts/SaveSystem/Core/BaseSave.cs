@@ -13,8 +13,6 @@ public abstract class BaseSave : MonoBehaviour
             Debug.LogError("SaveIdentity missing on GameObject with BaseSave!");
             return;
         }
-
-        identity.UniqueID = System.Guid.NewGuid().ToString();
     }
 
     protected virtual void Start()
@@ -31,12 +29,13 @@ public abstract class BaseSave : MonoBehaviour
     public string UniqueID
     {
         get => identity?.UniqueID;
-        set
+    }
+
+    public void UpdateID()
+    {
+        if (identity != null)
         {
-            if (identity != null)
-            {
-                identity.UniqueID = value;
-            }
+            identity.UpdateID();
         }
     }
 

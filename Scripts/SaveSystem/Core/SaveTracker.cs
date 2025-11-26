@@ -8,7 +8,17 @@ public static class SaveTracker
     public static void Register(BaseSave saveable)
     {
         if (!saveables.Contains(saveable))
+        {
             saveables.Add(saveable);
+            foreach(BaseSave save in saveables)
+            {
+                if(save.UniqueID == saveable.UniqueID && save != saveable)
+                {
+                    Debug.LogWarning("Duplicate UniqueID detected: " + saveable.UniqueID + ". This may cause issues during saving/loading.");
+                    save.UpdateID();
+                }
+            }
+        }
     }
 
     public static void Unregister(BaseSave saveable)
