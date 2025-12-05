@@ -1,6 +1,5 @@
-using System.Xml;
+using System;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class SaveIdentity : MonoBehaviour
@@ -10,24 +9,34 @@ public class SaveIdentity : MonoBehaviour
     public bool IsSceneObject = true;
     public string PrefabName;
 
-    private void SetID()
+    private void OnEnable()
     {
-        if (uniqueID == "")
+        if(!IsSceneObject)
+        {
+            SetID();
+        }
+    }
+
+    public void SetID()
+    {
+        if (uniqueID == "" || uniqueID == "ID")
         {
             Debug.Log("Genrated new ID");
-            uniqueID = GUID.Generate().ToString();
+            uniqueID = Guid.NewGuid().ToString();
             return;
         }
+    }
 
-        Debug.Log("ID already set: " + uniqueID);
+    public void SetID(string uniqueID)
+    {
+        this.uniqueID = uniqueID;
     }
 
     public void UpdateID()
     {
-        Debug.Log("ID Updated");
-        uniqueID = GUID.Generate().ToString();
+        Debug.Log("ID Updated + " + gameObject.name);
+        uniqueID = Guid.NewGuid().ToString();
     }
-
 
     private void OnValidate()
     {
@@ -39,10 +48,12 @@ public class SaveIdentity : MonoBehaviour
         SetID();
     }
 
+#if UNITY_EDITOR
     private bool IsPrefabAsset(GameObject obj)
     {
         var status = PrefabUtility.GetPrefabAssetType(obj);
         return status != PrefabAssetType.NotAPrefab &&
                PrefabUtility.GetPrefabInstanceStatus(obj) == PrefabInstanceStatus.NotAPrefab;
     }
+#endif
 }

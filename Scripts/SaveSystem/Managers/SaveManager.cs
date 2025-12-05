@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -26,6 +27,8 @@ public static class SaveManager
 
         foreach (var saveable in SaveTracker.GetAllSaveables())
         {
+            Debug.Log("Current saveables being saved: " + SaveTracker.GetAllSaveables().Count);
+
             ObjectSaveData obj = new ObjectSaveData
             {
                 UniqueID = saveable.UniqueID,
@@ -61,6 +64,33 @@ public static class SaveManager
         SaveFile data = JsonUtility.FromJson<SaveFile>(json);
         LoadManager.Load(data);
         return data;
+    }
+
+    // New coroutine-based async load
+    public static IEnumerator LoadAsync(MonoBehaviour caller, string path,
+                                        UnityEngine.UI.Slider progressBar = null,
+                                        System.Action<SaveFile> onComplete = null)
+    {
+        if (!File.Exists(path))
+        {
+            Debug.LogError("Save file not found: " + path);
+            yield break;
+        }
+
+        string json = File.ReadAllText(path);
+        SaveFile data = JsonUtility.FromJson<SaveFile>(json);
+
+        // Use the coroutine loader
+        yield return caller.StartCoroutine(
+            LoadManager.LoadAsync(data, progress =>
+            {
+                if (progressBar != null)
+                    progressBar.value = progress;
+            })
+        );
+
+        // Done
+        onComplete?.Invoke(data);
     }
 }
 
