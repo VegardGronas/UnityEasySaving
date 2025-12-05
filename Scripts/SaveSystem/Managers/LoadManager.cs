@@ -6,8 +6,12 @@ using UnityEngine;
 
 public static class LoadManager
 {
+    public static List<string> loadedObjects = new();
+
     public static void Load(SaveFile saveFile)
     {
+        loadedObjects.Clear();
+
         Debug.Log("Loading: " + saveFile.Objects.Count + " Objects");
 
         foreach (var objData in saveFile.Objects)
@@ -58,7 +62,11 @@ public static class LoadManager
                 continue;
             }
 
+            if (loadedObjects.Contains(objData.UniqueID))
+                continue;
+
             GameObject instance = GameObject.Instantiate(prefab);
+
             BaseSave[] newSaves = instance.GetComponents<BaseSave>();
 
             if (newSaves.Length <= 0)
@@ -77,11 +85,18 @@ public static class LoadManager
                 // Load data
                 save.LoadData(objData.CustomDataJson);
             }
+
+            SaveIdentity identity = instance.GetComponent<SaveIdentity>();
+
+            loadedObjects.Add(identity.UniqueID);
         }
     }
 
     public static IEnumerator LoadAsync(SaveFile saveFile, Action<float> onProgress = null, int batchSize = 5)
     {
+        loadedObjects.Clear();
+
+
         int totalObjects = saveFile.Objects.Count;
         int processed = 0;
 
@@ -143,6 +158,9 @@ public static class LoadManager
                 continue;
             }
 
+            if (loadedObjects.Contains(objData.UniqueID))
+                continue;
+
             GameObject instance = GameObject.Instantiate(prefab);
             BaseSave[] newSaves = instance.GetComponents<BaseSave>();
 
@@ -168,6 +186,10 @@ public static class LoadManager
                 // Load data
                 save.LoadData(objData.CustomDataJson);
             }
+
+            SaveIdentity identity = instance.GetComponent<SaveIdentity>();
+
+            loadedObjects.Add(identity.UniqueID);
 
             processed++;
             if (processed % batchSize == 0)
